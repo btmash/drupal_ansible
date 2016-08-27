@@ -1,0 +1,22 @@
+---
+
+  - name: Remove files directory
+    file:
+      path: '{{ project_docroot_path }}/shared/sites/default/files'
+      state: absent
+
+  - name: Sync up files directory
+    synchronize:
+      src: '{{ playbook_dir }}/sync/{{ inventory_hostname }}/files'
+      dest: '{{ project_docroot_path }}/shared/sites/default'
+
+  - name: Set up files directory ownership
+    file:
+      path: '{{ project_docroot_path }}/shared/sites/default/files'
+      state: directory
+      owner: deploy
+      group: www-data
+      recurse: yes
+
+  - name: Update files directory permissions
+    shell: 'chmod -R a-x+X {{ project_docroot_path }}/shared/sites/default/files && chmod -R ug+rws {{ project_docroot_path }}/shared/sites/default/files'

@@ -1,0 +1,18 @@
+---
+
+  - name: Upload database dump to server
+    copy:
+      src: '{{ playbook_dir }}/sync/{{ inventory_hostname }}/dump.sql'
+      dest: ~/dump.sql
+      force: yes
+
+  - name: Drop current database contents
+    shell: 'drush -y -r {{ project_docroot_path }}/current -l default sql-drop'
+
+  - name: Sync database
+    shell: 'drush -y -r {{ project_docroot_path }}/current -l default sqlc < ~/dump.sql'
+
+  - name: Remove db dump
+    file:
+      path: ~/dump.sql
+      state: absent

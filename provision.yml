@@ -1,0 +1,13 @@
+---
+- hosts: dev:production
+  become: no
+  roles:
+    - init
+    - geerlingguy.nginx
+    - geerlingguy.mysql
+    - geerlingguy.php
+    - geerlingguy.php-mysql
+    - geerlingguy.php-pecl
+    - geerlingguy.composer
+    - geerlingguy.drush
+    - post-provision

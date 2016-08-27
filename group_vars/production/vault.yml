@@ -1,0 +1,11 @@
+---
+
+# Use Ansible Vault to encrypt this file in actual use.
+
+# The root password and mysql users.
+mysql_root_password: ''
+mysql_users:
+  - name: ''
+    host: ''
+    password: ''
+    priv: "*.*:ALL"

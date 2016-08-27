@@ -1,0 +1,16 @@
+---
+- src: geerlingguy.apache
+- src: geerlingguy.composer
+- src: geerlingguy.drush
+- src: geerlingguy.firewall
+- src: geerlingguy.mysql
+- src: geerlingguy.nginx
+- src: geerlingguy.php
+- src: geerlingguy.php-mysql
+- src: geerlingguy.php-pecl
+- src: geerlingguy.php-xdebug
+- src: geerlingguy.php-xhprof
+- src: geerlingguy.postfix
+- src: geerlingguy.security
+- src: carlosbuenosvinos.ansistrano-deploy
+- src: carlosbuenosvinos.ansistrano-rollback

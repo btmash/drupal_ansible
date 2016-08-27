@@ -1,0 +1,51 @@
+---
+
+  - name: Set up project directory
+    file:
+      path: '{{ project_docroot_path }}/project'
+      state: directory
+      owner: deploy
+      group: www-data
+      recurse: yes
+
+  - name: Update project permissions
+    shell: 'chmod -R a-x+X {{ project_docroot_path}}/project && chmod -R ug+rws {{ project_docroot_path}}/project'
+
+  - name: Download project from git
+    become: yes
+    become_user: deploy
+    git:
+      repo: '{{ project_git_repo }}'
+      dest: '{{ project_docroot_path }}/project'
+      accept_hostkey: yes
+
+  - name: Install default site
+    become: yes
+    become_user: deploy
+    shell: 'drush -y -r {{ project_docroot_path }}/project -l default si --account-name=admin --account-pass={{ default_drupal_password }} --db-url=mysqli://{{ project_database_user }}:{{ project_database_password }}@localhost/{{ project_database_name }}'
+
+  - name: Update files directory permissions
+    shell: 'chmod -R a-x+X {{ project_docroot_path}}/project/sites/default/files && chmod -R ug+rws {{ project_docroot_path}}/project/sites/default/files'
+
+  - name: Set up project shared sites directory
+    file:
+      path: '{{ project_docroot_path }}/shared/sites'
+      state: directory
+      owner: deploy
+      group: www-data
+      recurse: yes
+
+  - name: Move sites/default into shared
+    command: 'mv {{ project_docroot_path }}/project/sites/default {{ project_docroot_path}}/shared/sites/default'
+
+  - name: Symlink prior project
+    file:
+      src: '{{ project_docroot_path }}/shared/sites/default'
+      dest: '{{ project_docroot_path }}/project/sites/default'
+      state: link
+
+  - name: Symlink project directory to current
+    file:
+      src: '{{ project_docroot_path }}/project'
+      dest: '{{ project_docroot_path }}/current'
+      state: link

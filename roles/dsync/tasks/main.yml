@@ -1,0 +1,16 @@
+---
+  - name: Check if sync db exists locally
+    become: no
+    local_action: stat path='{{ playbook_dir }}/sync/{{ inventory_hostname }}/dump.sql'
+    register: db_result
+
+  - name: Check if sync files exists locally
+    become: no
+    local_action: stat path='{{ playbook_dir }}/sync/{{ inventory_hostname }}/files'
+    register: files_result
+
+  - include: sync-db.yml
+    when: db_result.stat.isreg is defined and db_result.stat.isreg
+
+  - include: sync-files.yml
+    when: files_result.stat.isdir is defined and files_result.stat.isdir

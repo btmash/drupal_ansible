@@ -1,0 +1,11 @@
+# Project Sync directory
+
+This directory is used for creating syncs to go upstream
+
+The structure would be (where <INVENTORY_HOSTNAME> is a directory):
+- <INVENTORY_HOSTNAME>/dump.sql
+- <INVENTORY_HOSTNAME>/files
+
+Note that dump.sql is not gzipped. Files directory is also not gzipped. They will
+get synced and sent in a gzipped format automatically and is easier to work with
+on the server.

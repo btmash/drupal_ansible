@@ -1,0 +1,6 @@
+---
+- hosts: all
+  become: yes
+  become_user: deploy
+  roles:
+    - carlosbuenosvinos.ansistrano-deploy

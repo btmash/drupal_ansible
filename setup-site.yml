@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: no
+  vars_prompt:
+    - name: "bitbucket_username"
+      prompt: "What is your bitbucket username"
+    - name: "bitbucket_password"
+      prompt: "What is your bitbucket password"
+  roles:
+    - setup-site

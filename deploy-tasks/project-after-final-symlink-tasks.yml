@@ -1,0 +1,4 @@
+---
+
+  - name: PROJECT | Run drush updb
+    command: "drush -r {{ ansistrano_release_path.stdout }} -l default updb"

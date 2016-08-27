@@ -1,0 +1,35 @@
+---
+  - name: Update apt
+    apt:  update_cache=yes
+
+  - name: Upgrade all apt packages
+    apt:  upgrade=dist
+
+  - name: Install system packages
+    apt:  pkg={{ item }} state=latest
+    with_items: '{{ init_packages }}'
+
+  - name: Update apt again
+    apt:  update_cache=yes
+
+  - name: Add regular users
+    user: name={{ item.name }} shell=/bin/bash generate_ssh_key=yes groups=www-data append=yes
+    with_items: "{{ regular_users }}"
+
+  - name: Add keys for regular users
+    authorized_key: user={{ item.name }} key="{{ item.key }} shell=/bin/bash groups=www-data append=yes"
+    with_items: "{{ regular_users }}"
+
+  - name: Add sudoer users
+    user: name={{ item.name }} shell=/bin/bash groups=www-data append=yes
+    with_items: "{{ sudoer_users }}"
+
+  - name: Add keys for sudoer users
+    authorized_key: user={{ item.name }} key="{{ item.key }}"
+    with_items: "{{ sudoer_users }}"
+
+  - name: Add sudoer users to sudoers file
+    lineinfile:
+      dest: /etc/sudoers
+      line: "{{ item.name }} ALL=(ALL) NOPASSWD: ALL"
+    with_items: "{{ sudoer_users }}"
