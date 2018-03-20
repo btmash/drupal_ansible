@@ -41,3 +41,6 @@ php_fpm_pm_max_children: 50
 php_fpm_pm_start_servers: 5
 php_fpm_pm_min_spare_servers: 5
 php_fpm_pm_max_spare_servers: 5
+
+drush_launcher_install: yes
+drush_launcher_version: '0.6.0'
