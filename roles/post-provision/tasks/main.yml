@@ -1,8 +1,0 @@
----
-  - name: Store ssh public key for adding to bitbucket.
-    shell: cat /home/deploy/.ssh/id_rsa.pub
-    register: result
-
-  - name: Display ssh public key for adding to bitbucket.
-    debug:
-      var: result.stdout

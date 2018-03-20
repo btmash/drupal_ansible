@@ -1,11 +1,8 @@
-# dev01 floating ip is 45.55.115.239
-server01 ansible_ssh_host=10.10.10.10 ansible_ssh_user=root
-server02 ansible_ssh_host=10.10.10.11 ansible_ssh_user=root
-server03 ansible_ssh_host=10.10.10.11 ansible_ssh_user=root
+web1 ansible_ssh_host=10.0.0.2 ansible_ssh_user=vagrant
+db1 ansible_ssh_host=10.0.0.3 ansible_ssh_user=vagrant
 
-[dev]
-server01
-server02
+[web]
+web1
 
-[production]
-server03
+[db]
+db1
