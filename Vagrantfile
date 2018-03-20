@@ -15,7 +15,17 @@ Vagrant.configure("2") do |cluster|
   end
 
   cluster.vm.provision :ansible do |ansible|
+    ansible.playbook = "install_python.yml"
+    ansible.groups = {
+      "db" => ["db1"],
+      "web" => ["web1"],
+    }
+  end
+
+  cluster.vm.provision :ansible do |ansible|
     ansible.playbook = "provision.yml"
+    ansible.tags = "init"
+    ansible.ask_vault_pass = true
     ansible.groups = {
       "db" => ["db1"],
       "web" => ["web1"],

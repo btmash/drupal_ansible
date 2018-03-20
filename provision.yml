@@ -1,21 +1,23 @@
 ---
+# This is created with Ubuntu 16.04 in mind.
+# This would change for a different OS
 - hosts: all
-  become: no
+  become: yes
   roles:
-    - init
+    -  { role: init, tags: [ 'init'] }
 
 - hosts: web
   become: no
   roles:
-    - geerlingguy.nginx
-    - geerlingguy.php
-    - geerlingguy.php-mysql
-    - geerlingguy.php-pecl
-    - geerlingguy.composer
-    - geerlingguy.drush
+    -  { role: geerlingguy.nginx, tags: [ 'nginx'] }
+    -  { role: geerlingguy.php, tags: [ 'php-core'] }
+    -  { role: geerlingguy.php-mysql, tags: [ 'php-mysql'] }
+    -  { role: geerlingguy.php-pecl, tags: [ 'pecl'] }
+    -  { role: geerlingguy.composer, tags: [ 'composer'] }
+    -  { role: geerlingguy.drush, tags: [ 'drush'] }
+    -  { role: geerlingguy.drupal-console, tags: [ 'drupal-console'] }
 
 - hosts: db
   become: no
   roles:
-    - init
-    - geerlingguy.mysql
+    -  { role: geerlingguy.mysql, tags: [ 'mysql'] }
