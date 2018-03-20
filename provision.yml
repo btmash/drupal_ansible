@@ -11,8 +11,6 @@
   roles:
     - { role: geerlingguy.php-versions, tags: [ 'php'] }
     - { role: geerlingguy.php, tags: [ 'php'] }
-    - { role: geerlingguy.php-mysql, tags: [ 'php-mysql'] }
-    - { role: geerlingguy.php-pecl, tags: [ 'pecl'] }
     - { role: geerlingguy.composer, tags: [ 'composer'] }
     - { role: geerlingguy.drush, tags: [ 'drush'] }
     - { role: geerlingguy.drupal-console, tags: [ 'drupal-console'] }
