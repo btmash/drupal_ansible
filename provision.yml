@@ -7,17 +7,18 @@
     -  { role: init, tags: [ 'init'] }
 
 - hosts: web
-  become: no
+  become: yes
   roles:
-    -  { role: geerlingguy.nginx, tags: [ 'nginx'] }
-    -  { role: geerlingguy.php, tags: [ 'php-core'] }
-    -  { role: geerlingguy.php-mysql, tags: [ 'php-mysql'] }
-    -  { role: geerlingguy.php-pecl, tags: [ 'pecl'] }
-    -  { role: geerlingguy.composer, tags: [ 'composer'] }
-    -  { role: geerlingguy.drush, tags: [ 'drush'] }
-    -  { role: geerlingguy.drupal-console, tags: [ 'drupal-console'] }
+    - { role: geerlingguy.php-versions, tags: [ 'php'] }
+    - { role: geerlingguy.php, tags: [ 'php'] }
+    - { role: geerlingguy.php-mysql, tags: [ 'php-mysql'] }
+    - { role: geerlingguy.php-pecl, tags: [ 'pecl'] }
+    - { role: geerlingguy.composer, tags: [ 'composer'] }
+    - { role: geerlingguy.drush, tags: [ 'drush'] }
+    - { role: geerlingguy.drupal-console, tags: [ 'drupal-console'] }
+    - { role: geerlingguy.nginx, tags: [ 'nginx'] }
 
 - hosts: db
-  become: no
+  become: yes
   roles:
-    -  { role: geerlingguy.mysql, tags: [ 'mysql'] }
+    - { role: geerlingguy.mysql, tags: [ 'mysql'] }

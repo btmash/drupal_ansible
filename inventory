@@ -1,5 +1,5 @@
-web1 ansible_ssh_host=10.0.0.2 ansible_ssh_user=vagrant
-db1 ansible_ssh_host=10.0.0.3 ansible_ssh_user=vagrant
+web1 ansible_ssh_host=10.0.0.2
+db1 ansible_ssh_host=10.0.0.3
 
 [web]
 web1
