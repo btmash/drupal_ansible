@@ -3,7 +3,7 @@
 - name: Ensure we have our website directory
   become: yes
   file:
-    path: "{{ project_docroot_path }}/tmp"
+    path: "{{ project_docroot_path }}/tmp/web"
     state: directory
     owner: "{{ project_deploy_owner }}"
     group: "{{ project_deploy_group }}"
@@ -15,4 +15,4 @@
   file:
     src: "{{ project_docroot_path }}/tmp"
     dest: "{{ project_docroot_path }}/current"
-    state: directory
+    state: link
