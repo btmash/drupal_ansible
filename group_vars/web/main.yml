@@ -36,6 +36,7 @@ php_packages:
 
 php_enable_php_fpm: true
 php_fpm_daemon: 'php7.1-fpm'
+php_fpm_listen_protocol: ""
 php_fpm_listen: "127.0.0.1:9000"
 php_fpm_listen_allowed_clients: "127.0.0.1"
 php_fpm_pm_max_children: 50
@@ -45,3 +46,25 @@ php_fpm_pm_max_spare_servers: 5
 
 drush_launcher_install: yes
 drush_launcher_version: '0.6.0'
+
+project_path: "/var/www/ansible-demo"
+project_deploy_owner: "deploy"
+project_deploy_group: "deploy"
+
+nginx_vhosts:
+  - listen: "80"
+    server_name: "example.com"
+    server_name_redirect: "www.example.com"
+    root: "{{ project_path }}/current"
+    index: "index.php index.html index.htm"
+    state: "present"
+    template: "{{ nginx_vhost_template }}"
+    filename: "example.com.conf"
+    extra_parameters: |
+      location ~ \.php$ {
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          fastcgi_pass {{ php_fpm_listen_protocol }}{{ php_fpm_listen }};
+          fastcgi_index index.php;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          include fastcgi_params;
+      }
