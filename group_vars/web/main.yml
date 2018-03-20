@@ -47,7 +47,7 @@ php_fpm_pm_max_spare_servers: 5
 drush_launcher_install: yes
 drush_launcher_version: '0.6.0'
 
-project_path: "/var/www/ansible-demo"
+project_docroot_path: "/var/www/ansible-demo"
 project_deploy_owner: "deploy"
 project_deploy_group: "deploy"
 
@@ -55,12 +55,18 @@ nginx_vhosts:
   - listen: "80"
     server_name: "example.com"
     server_name_redirect: "www.example.com"
-    root: "{{ project_path }}/current"
+    root: "{{ project_docroot_path }}/current/web"
     index: "index.php index.html index.htm"
     state: "present"
     template: "{{ nginx_vhost_template }}"
     filename: "example.com.conf"
     extra_parameters: |
+      location / {
+          try_files $uri /index.php?$query_string; # For Drupal >= 7
+      }
+      location @rewrite {
+          rewrite ^/(.*)$ /index.php?q=$1;
+      }
       location ~ \.php$ {
           fastcgi_split_path_info ^(.+\.php)(/.+)$;
           fastcgi_pass {{ php_fpm_listen_protocol }}{{ php_fpm_listen }};
@@ -68,3 +74,8 @@ nginx_vhosts:
           fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
           include fastcgi_params;
       }
+      location ~ ^/sites/.*/files/styles/ { # For Drpal >= 7
+          try_files $uri @rewrite;
+      }
+
+project_git_repo: https://github.com/btmash/ansible_d8_composer.git

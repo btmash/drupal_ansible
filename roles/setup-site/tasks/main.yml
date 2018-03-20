@@ -1,42 +1,18 @@
 ---
 
-  - name: Add database
-    become: yes
-    mysql_db:
-      name: '{{ project_database_name }}'
-      encoding: utf8
-      collation: utf8_general_ci
-      state: present
-
-  - name: Add database user
-    become: yes
-    mysql_user:
-      name: '{{ project_database_user }}'
-      priv: '{{ project_database_name }}.*:ALL'
-      password: '{{ project_database_password }}'
-      append_privs: yes
-      state: present
-
-  - name: Store ssh public key for adding to bitbucket.
-    shell: cat /home/deploy/.ssh/id_rsa.pub
-    register: deploy_user_key
-
-  - name: Add key to bitbucket
-    shell: 'curl -X POST -u {{ bitbucket_username }}:{{ bitbucket_password }} --data-urlencode "key={{ deploy_user_key.stdout }}" --data-urlencode "label={{ inventory_hostname }} deploy key" https://api.bitbucket.org/1.0/repositories/{{ project_bitbucket_user }}/{{ project_name }}/deploy-keys'
-
   - name: Check if project already exists
     stat:
-      path: '{{ project_docroot_path }}'
+      path: '{{ project_docroot_path }}/project'
     register: project
 
   - name: Output path is defined
     debug:
-      msg: '{{ project_docroot_path }} path exists and do not touch anything else'
+      msg: '{{ project_docroot_path }}/project path exists and do not touch anything else'
     when: project.stat.isdir is defined and project.stat.isdir
 
   - name: Output path is not defined
     debug:
-      msg: '{{ project_docroot_path }} path does not exist. Set up site'
+      msg: '{{ project_docroot_path }}/project path does not exist. Set up site'
     when: project.stat.isdir is not defined
 
   - include: setup.yml
@@ -44,20 +20,7 @@
 
   - name: Update uploaded files directory permissions
     become: yes
-    shell: 'chmod -R a-x+X {{ project_docroot_path}}/shared/sites/default/files && chmod -R ug+rws {{ project_docroot_path}}/shared/sites/default/files'
-
-  - name: Add nginx conf
-    become: yes
-    template:
-      src: nginx_vhost.conf.j2
-      dest: '/etc/nginx/sites-available/{{ project_name }}.conf'
-
-  - name: Symlink port 80 prod sites
-    become: yes
-    file:
-      src: '/etc/nginx/sites-available/{{ project_name }}.conf'
-      dest: '/etc/nginx/sites-enabled/{{ project_name }}.conf'
-      state: link
+    shell: 'chmod -R a-x+X {{ project_docroot_path}}/shared/web/sites/default/files && chmod -R ug+rws {{ project_docroot_path}}/shared/web/sites/default/files'
 
   - name: Restart nginx
     become: yes
@@ -65,8 +28,8 @@
       name: nginx
       state: restarted
 
-  - name: Restart php5-fpm
+  - name: Restart php{{ php_version }}-fpm
     become: yes
     service:
-      name: php5-fpm
+      name: php{{ php_version }}-fpm
       state: restarted

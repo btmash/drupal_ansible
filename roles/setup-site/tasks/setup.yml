@@ -1,50 +1,77 @@
 ---
 
   - name: Set up project directory
+    become: yes
+    become_user: "{{ project_deploy_owner }}"
     file:
       path: '{{ project_docroot_path }}/project'
       state: directory
-      owner: deploy
+      owner: "{{ project_deploy_owner }}"
       group: www-data
       recurse: yes
 
   - name: Update project permissions
+    become: yes
+    become_user: "{{ project_deploy_owner }}"
     shell: 'chmod -R a-x+X {{ project_docroot_path}}/project && chmod -R ug+rws {{ project_docroot_path}}/project'
 
   - name: Download project from git
     become: yes
-    become_user: deploy
+    become_user: "{{ project_deploy_owner }}"
     git:
       repo: '{{ project_git_repo }}'
       dest: '{{ project_docroot_path }}/project'
       accept_hostkey: yes
 
+  - name: Install dependencies
+    become: yes
+    become_user: "{{ project_deploy_owner }}"
+    shell: composer install
+    args:
+      chdir: '{{ project_docroot_path }}/project'
+
   - name: Install default site
     become: yes
-    become_user: deploy
-    shell: 'drush -y -r {{ project_docroot_path }}/project -l default si --account-name=admin --account-pass={{ default_drupal_password }} --db-url=mysqli://{{ project_database_user }}:{{ project_database_password }}@localhost/{{ project_database_name }}'
+    become_user: "{{ project_deploy_owner }}"
+    shell: 'drush -y site:install --account-name=admin --account-pass={{ default_drupal_password }}  --db-url=mysqli://{{ project_database_user }}:{{ project_database_password }}@{{ project_database_host }}/{{ project_database_name }}'
+    args:
+      chdir: '{{ project_docroot_path }}/project'
+
+  - name: Update default directory permission
+    become: yes
+    shell: 'chmod -R u+w {{ project_docroot_path}}/project/web/sites/default'
 
   - name: Update files directory permissions
-    shell: 'chmod -R a-x+X {{ project_docroot_path}}/project/sites/default/files && chmod -R ug+rws {{ project_docroot_path}}/project/sites/default/files'
+    become: yes
+    become_user: "{{ project_deploy_owner }}"
+    shell: 'chmod -R a-x+X {{ project_docroot_path}}/project/web/sites/default/files && chmod -R ug+rws {{ project_docroot_path}}/project/web/sites/default/files'
 
   - name: Set up project shared sites directory
+    become: yes
+    become_user: "{{ project_deploy_owner }}"
     file:
-      path: '{{ project_docroot_path }}/shared/sites'
+      path: '{{ project_docroot_path }}/shared/web/sites'
       state: directory
       owner: deploy
       group: www-data
       recurse: yes
 
   - name: Move sites/default into shared
-    command: 'mv {{ project_docroot_path }}/project/sites/default {{ project_docroot_path}}/shared/sites/default'
+    become: yes
+    become_user: "{{ project_deploy_owner }}"
+    command: 'mv {{ project_docroot_path }}/project/web/sites/default {{ project_docroot_path}}/shared/web/sites/default'
 
   - name: Symlink prior project
+    become: yes
+    become_user: "{{ project_deploy_owner }}"
     file:
-      src: '{{ project_docroot_path }}/shared/sites/default'
-      dest: '{{ project_docroot_path }}/project/sites/default'
+      src: '{{ project_docroot_path }}/shared/web/sites/default'
+      dest: '{{ project_docroot_path }}/project/web/sites/default'
       state: link
 
   - name: Symlink project directory to current
+    become: yes
+    become_user: "{{ project_deploy_owner }}"
     file:
       src: '{{ project_docroot_path }}/project'
       dest: '{{ project_docroot_path }}/current'
