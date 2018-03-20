@@ -1,5 +1,0 @@
----
-  project_database: mysqli://username:password@localhost/project01
-  project_database_name: username
-  project_database_user: password
-  project_database_password: root_password
