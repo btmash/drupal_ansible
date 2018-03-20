@@ -1,0 +1,10 @@
+---
+init_packages:
+  - sudo
+  - build-essential
+  - python-software-properties
+  - vim
+  - curl
+  - wget
+  - fail2ban
+  - monit
