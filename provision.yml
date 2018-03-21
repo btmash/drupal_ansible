@@ -6,6 +6,11 @@
   roles:
     -  { role: init, tags: [ 'init'] }
 
+- hosts: db
+  become: yes
+  roles:
+    - { role: geerlingguy.mysql, tags: [ 'mysql'] }
+
 - hosts: web
   become: yes
   roles:
@@ -16,8 +21,3 @@
     - { role: geerlingguy.drupal-console, tags: [ 'drupal-console'] }
     - { role: post-provision, tags: [ 'post-provision' ] }
     - { role: geerlingguy.nginx, tags: [ 'nginx'] }
-
-- hosts: db
-  become: yes
-  roles:
-    - { role: geerlingguy.mysql, tags: [ 'mysql'] }
