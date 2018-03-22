@@ -1,15 +1,11 @@
 ---
 
   - name: Run module updates
-    become_user: yes
-    become_user: "{{ project_deploy_owner }}"
     shell: "drush updb"
     args:
       chdir: "{{ ansistrano_release_path.stdout }}"
 
   - name: Run module entity updates
-    become_user: yes
-    become_user: "{{ project_deploy_owner }}"
     shell: "drush updb --entity-updates"
     args:
       chdir: "{{ ansistrano_release_path.stdout }}"

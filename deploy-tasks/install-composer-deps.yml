@@ -1,8 +1,6 @@
 ---
 
   - name: Install composer dependencies
-    become_user: yes
-    become_user: "{{ project_deploy_owner }}"
     shell: "composer install"
     args:
       chdir: "{{ ansistrano_release_path.stdout }}"
