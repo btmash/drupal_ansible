@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: web
   become: yes
   become_user: deploy
   roles:
