@@ -3,11 +3,15 @@
 - name: Ensure we have our website directory
   become: yes
   file:
-    path: "{{ project_docroot_path }}/tmp/web"
+    path: "{{ item }}"
     state: directory
     owner: "{{ project_deploy_owner }}"
     group: "{{ project_deploy_group }}"
     mode: 0755
+  with_items:
+    - "{{ project_docroot_path}}"
+    - "{{ project_docroot_path}}/tmp"
+    - "{{ project_docroot_path}}/tmp/web"
 
 - name: Ensure we have our website directory
   become: yes
