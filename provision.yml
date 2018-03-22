@@ -3,6 +3,7 @@
 # This would change for a different OS
 - hosts: all
   become: yes
+  strategy: free
   roles:
     -  { role: init, tags: [ 'init'] }
 
