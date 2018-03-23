@@ -10,78 +10,80 @@ to spin the sites up.
 The recipes consist of various files. At the root level, we have our main points
 of interaction via playbooks (these files will mostly be left unchanged):
 
+- install_python.yml -- Ansible requires a server to have python installed to
+  work correctly. This file bypasses that check and installs python so the rest
+  of the steps work.
 - provision.yml -- Installs the necessary software on a server (nginx, mysql, etc)
-- setup-site.yml -- This will set up a new Drupal site based on a git repository with composer install
-- (TODO) deploy-site.yml -- This will deploy new code changes from a git repo for a drupal site.
+- install-site.yml -- This will set up a new Drupal site based on a git repository with composer install
+- deploy-site.yml -- This will deploy new code changes from a git repo for a drupal site.
 
 ### ```inventory``` File
 
 We also have the inventory file. This file consists of servers along with their
-groups. The server itself will have a name of its own along with the IP address.
-We then add servers to groups. For ex. a dev server (such as dev01) would belong
-to the [dev] group. However, it can also belong to a site-specific group (such
-as [tyf_dev]). This allows us to provision servers under the dev group while
-leaving site specific groups to run site setups and deployments. When you are
-adding a site, please remember to ensure its server belongs in both the general
-provisioning group (such as [dev] or [production]), and also in the site
-specific group. If one does not exist, please create one.
+groups. This file has been simplified so that we are just listing groups of
+types of servers. Eventually, we will use this file to show how to run 'multiple'
+hosts.
 
 ### ```group_vars``` directory
 
 This section is very important only to explain what this section does. You will
 not actually touch any files in this section.
 
-- [all] = this directory contains variables that all servers will get. You most likely want to modify the 'vault.yml' file.
-- [web] = This directory contains variables that pertain to what gets set up on 'web' servers.
-- [database] = This directory contains variables that pertain to what gets set up on 'web' servers. You will likely want to modify the 'vault.yml' file.
+- [all] = this directory contains variables that all servers will get. The
+  vault.yml file contains ssh keys for your users.
+- [web] = This directory contains variables that pertain to what gets set up on
+  'web' servers. The vault.yml file contains the application db connection
+  credentials.
+- [db] = This directory contains variables that pertain to what gets set up on
+  'db' servers. The vault.yml file sets up mysql users, databases, and
+  permissions.
 
 Servers get added to the inventory file and they pick up variables that are
 defined in these groups. Each group directory has 2 files:
 
 - vars.yml - These are variables that are publicly viewable in an editor.
-- vault.yml - These are variables that get encrypted for git in the event your git repo is compromised.
+- vault.yml - These are variables that get encrypted so they can be committed
+  to git.
 
 ## Instructions to setting up a the ymls.
 
-- Add the server to the inventory file. The server itself should get a name like dev01, prod01, dev02, prod02, etc.
-- Add the server to the appropriate group in the inventory file (dev* servers should be added to the [dev] group, prod* servers should be added to the production group. Create a new [SITE-SPECIFIC] group that is site-specific as well and add the server to that group.).
-- Copy the host_vars/tyf_dev01 directory to host_vars/[SITE-SPECIFIC]
-- Update host_vars/[SITE-SPECIFIC]/vars.yml with the project name, git repo, docrooth path on server, etc (everything before the DO NOT EDIT line).
-- Open host_vars/[SITE-SPECIFIC]/vault.yml with the following command: ```ansible-vault edit host_vars/[SITE-SPECIFIC]/vault.yml``` (the password used in this open-source project is 'ansible' (minus the quotes)).
-- Update the file with the appropriate variables (like the mysql database connection, etc).
+- Add the server to the inventory file. I recommend giving the server an aliased
+  name
+- Add the server to the appropriate group in the inventory file.
+- Update the file with the appropriate variables (like the mysql database
+  connection, etc).
 
 ## Instructions once the inventory and group_vars are set up.
 
 ### Step 1
 
-#### Spin up new Droplet with Ubuntu 16.04
+#### Spin up new server with Ubuntu 16.04
 
 ### Step 2
 
-First install Ansible (brew install ansible is easiest)
+LOCALLY: First install Ansible (brew install ansible is easiest)
 
 #### Install ansible galaxy requirements
 
-sudo ansible-galaxy install -r requirements.yml --force
+The repo already comes with them. However, if you want to replace them:
+
+`ansible-galaxy install -r requirements.yml -p roles -f`
 
 ### Step 3
 
 #### Run through the provisioning playbook and set up a server (Enter the vault pass on prompt)
 
-ansible-playbook --ask-vault-pass -i inventory -l <INSERT ENVIRONMENT NAME> provision.yml
+ansible-playbook --ask-vault-pass -i inventory -u <ROOT_USER> install_python.yml
+ansible-playbook --ask-vault-pass -i inventory -u <ROOT_USER> provision.yml
 
 ### Step 4
 
 #### Run through the site playbook and set up a default site with the codebase (Enter the vault pass on prompt, along with your bitbucket username and password when prompted)
 
-ansible-playbook --ask-vault-pass -i inventory -l <INSERT ENVIRONMENT NAME> setup-site.yml
+ansible-playbook --ask-vault-pass -i inventory -u <ROOT_USER> install-site.yml
 
 ### Step 5
 
-#### Sync whatever you need from your other location.
-
-### Step 6
-
 #### Run through the deploy playbook and set up a proper deployment.
 
-ansible-playbook --ask-vault-pass -i inventory -l <INSERT ENVIRONMENT NAME> deploy-site.yml
+ansible-playbook --ask-vault-pass -i inventory -u <ROOT_USER> deploy-site.yml
