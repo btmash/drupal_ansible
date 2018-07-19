@@ -79,7 +79,7 @@ nginx_vhosts:
       }
 
 project_git_repo: https://github.com/btmash/ansible_d8_composer.git
-
+project_database_host: "{{ hostvars[groups['db'][0]]['ansible_ssh_host'] }}"
 
 ########## ANSISTRANO STUFFS ##########
 ansistrano_deploy_from: "{{ playbook_dir }}" # Where my local project is (relative or absolute path)
