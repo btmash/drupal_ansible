@@ -1,7 +1,7 @@
 ---
 
   - name: Run module updates
-    shell: "drush updb"
+    shell: "drupal updb"
     args:
       chdir: "{{ ansistrano_release_path.stdout }}"
 
